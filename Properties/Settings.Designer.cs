@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WPFApp_Test3.Properties
+namespace Task_ImageViewer.Properties
 {
 
 

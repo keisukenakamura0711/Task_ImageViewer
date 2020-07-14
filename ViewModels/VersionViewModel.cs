@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WPFApp_Test3.Models;
+using Task_ImageViewer.Models;
 
-namespace WPFApp_Test3.ViewModels
+namespace Task_ImageViewer.ViewModels
 {
     /// <summary>
     /// VersionView ウィンドウに対するデータコンテキストを表します。

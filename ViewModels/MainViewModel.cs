@@ -2,13 +2,23 @@
 using System.Threading;
 using System.Timers;
 
-namespace WPFApp_Test3.ViewModels
+namespace Task_ImageViewer.ViewModels
 {
     /// <summary>
     /// MainViewウインドウに対するデータコンテキストを表します。
     /// </summary>
     internal class MainViewModel : NotificationObject
     {
+        private string _FilePath;
+        /// <summry>
+        /// 割られる数に指定される文字列を取得または設定します
+        /// </summry>
+        public string FilePath
+        {
+            get { return this._FilePath; }
+            set { SetProperty(ref this._FilePath, value); }
+        }
+
         private DelegateCommand _openFileCommand;
         /// <summary>
         /// ファイルを開くコマンドを取得します。
@@ -37,7 +47,7 @@ namespace WPFApp_Test3.ViewModels
         private void OnDialogCallback(bool isOk, string filePath)
         {
             this.DialogCallback = null;
-            System.Diagnostics.Debug.WriteLine("コールバック処理をおこないます。");
+            this.FilePath = filePath;
         }
 
         #region アプリケーションを終了する
@@ -67,6 +77,49 @@ namespace WPFApp_Test3.ViewModels
             return true;
         }
         #endregion アプリケーションを終了する
+
+        #region イメージを表示する
+        private ImageViewModel _ImageViewModel = new ImageViewModel();
+        public ImageViewModel ImageViewModel
+        {
+            get { return this._ImageViewModel; }
+        }
+
+        private DelegateCommand _ImageDialogCommand;
+        /// <summary>
+        /// イメージ情報表示コマンドを取得します。
+        /// </summary>
+        public DelegateCommand ImageDialogCommand
+        {
+            get
+            {
+                return this._ImageDialogCommand ?? (this._ImageDialogCommand = new DelegateCommand(_ =>
+                {
+                    ImageViewModel.ImageViewFile = this.FilePath;
+                    this.ImageDialogCallback = this.OnImageCallback;
+                }));
+            }
+        }
+
+        private Action<bool> _ImageDialogCallback;
+        /// <summary>
+        /// イメージ情報表示コールバックを取得します。
+        /// </summary>
+        public Action<bool> ImageDialogCallback
+        {
+            get { return this._ImageDialogCallback; }
+            private set { SetProperty(ref this._ImageDialogCallback, value); }
+        }
+
+        /// <summary>
+        /// イメージ情報表示コールバック処理をおこないます。
+        /// </summary>
+        /// <param name="result"></param>
+        private void OnImageCallback(bool result)
+        {
+            this.ImageDialogCallback = null;
+        }
+        #endregion イメージ情報を表示する
 
         #region バージョン情報を表示する
         private VersionViewModel _versionViewModel = new VersionViewModel();
@@ -107,36 +160,7 @@ namespace WPFApp_Test3.ViewModels
         private void OnVersionCallback(bool result)
         {
             this.VersionDialogCallback = null;
-            System.Diagnostics.Debug.WriteLine(result);
         }
         #endregion バージョン情報を表示する
-
-        #region 現在時刻を取得する
-        /// <summary>
-        /// 現在時刻を更新するためのタイマー
-        /// </summary>
-        private System.Timers.Timer _timer;
-
-        private DateTime _currentTime;
-        public DateTime CurrentTime
-        {
-            get
-            {
-                if (this._timer == null)
-                {
-                    this._currentTime = DateTime.Now;
-
-                    this._timer = new System.Timers.Timer(1000);
-                    this._timer.Elapsed += (_, __) =>
-                    {
-                        this._currentTime = DateTime.Now;
-                    };
-                    this._timer.Start();
-                }
-                return this._currentTime;
-            }
-            private set { SetProperty(ref this._currentTime, value); }
-        }
-        #endregion 現在時刻を取得する
     }
 }

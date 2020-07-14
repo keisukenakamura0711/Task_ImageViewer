@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace WPFApp_Test3.Views
+namespace Task_ImageViewer.Views
 {
     /// <summary>
     /// MainView.xaml の相互作用ロジック

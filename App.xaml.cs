@@ -5,10 +5,10 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using WPFApp_Test3.ViewModels;
-using WPFApp_Test3.Views;
+using Task_ImageViewer.ViewModels;
+using Task_ImageViewer.Views;
 
-namespace WPFApp_Test3
+namespace Task_ImageViewer
 {
     /// <summary>
     /// App.xaml の相互作用ロジック

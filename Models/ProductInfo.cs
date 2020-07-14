@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace WPFApp_Test3.Models
+namespace Task_ImageViewer.Models
 {
     class ProductInfo
     {

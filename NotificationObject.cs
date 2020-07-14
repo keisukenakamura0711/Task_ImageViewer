@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace WPFApp_Test3
+namespace Task_ImageViewer
 {
     internal abstract class NotificationObject : INotifyPropertyChanged
     {

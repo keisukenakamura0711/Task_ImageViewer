@@ -2,7 +2,7 @@
 using System;
 using System.Windows;
 
-namespace WPFApp_Test3.Views.Behaviors
+namespace Task_ImageViewer.Views.Behaviors
 {
     /// <summary>
     /// コモンダイアログに関するビヘイビアを表します。

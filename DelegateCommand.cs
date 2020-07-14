@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WPFApp_Test3
+namespace Task_ImageViewer
 {
     internal class DelegateCommand : ICommand
     {

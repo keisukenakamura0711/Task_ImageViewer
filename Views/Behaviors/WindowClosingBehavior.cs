@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 
-namespace WPFApp_Test3.Views.Behaviors
+namespace Task_ImageViewer.Views.Behaviors
 {
     /// <summary>
     /// Windowを閉じるときのビヘイビアを表します。

@@ -15,7 +15,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("Release")]
 #endif
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("WPFApp_Test3")]
+[assembly: AssemblyProduct("Task_ImageViewer")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

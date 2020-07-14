@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace Task_ImageViewer.Views
 {
     /// <summary>
-    /// VersionView.xaml の相互作用ロジック
+    /// ImageView.xaml の相互作用ロジック
     /// </summary>
-    public partial class VersionView : Window
+    public partial class ImageView : Window
     {
-        public VersionView()
+        public ImageView()
         {
             InitializeComponent();
         }
