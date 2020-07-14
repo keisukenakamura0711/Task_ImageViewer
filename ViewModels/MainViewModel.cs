@@ -9,14 +9,18 @@ namespace Task_ImageViewer.ViewModels
     /// </summary>
     internal class MainViewModel : NotificationObject
     {
-        private string _FilePath;
+        private string _FilePath = "";
         /// <summry>
         /// 割られる数に指定される文字列を取得または設定します
         /// </summry>
         public string FilePath
         {
             get { return this._FilePath; }
-            set { SetProperty(ref this._FilePath, value); }
+            set
+            {
+                SetProperty(ref this._FilePath, value);
+                this.ImageDialogCommand.RaiseCanExecuteChanged();
+            }
         }
 
         private DelegateCommand _openFileCommand;
@@ -93,11 +97,13 @@ namespace Task_ImageViewer.ViewModels
         {
             get
             {
-                return this._ImageDialogCommand ?? (this._ImageDialogCommand = new DelegateCommand(_ =>
+                return this._ImageDialogCommand ?? (this._ImageDialogCommand = new DelegateCommand(
+                _ =>
                 {
                     ImageViewModel.ImageViewFile = this.FilePath;
                     this.ImageDialogCallback = this.OnImageCallback;
-                }));
+                },
+                _ => (this.FilePath.Contains(".bmp") || this.FilePath.Contains(".jpg") || this.FilePath.Contains(".png"))));
             }
         }
 

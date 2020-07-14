@@ -19,7 +19,7 @@
                           InputGestureText="Ctrl+O"
                           Command="{Binding OpenFileCommand}"
                           b:CommonDialogBehavior.Title="ファイルを開く"
-                          b:CommonDialogBehavior.Filter="画像ファイル (*.bmp; *.jpg; *.png)|*.bmp;*.jpg;*.png|すべてのファイル (*.*)|*.*"
+                          b:CommonDialogBehavior.Filter="画像ファイル (*.bmp; *.jpg; *.png)|*.bmp;*.jpg;*.png"
                           b:CommonDialogBehavior.Multiselect="False"
                           b:CommonDialogBehavior.Callback="{Binding DialogCallback}"/>
                 <Separator/>
@@ -37,7 +37,7 @@
 
         <Grid>
             <StackPanel Width="618" Margin="0,0,0,220" Orientation="Horizontal">
-                <TextBox Text="{Binding FilePath}" Margin="2,2,2,2" Width="500"/>
+                <TextBox Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,2,2" Width="500"/>
                 <Button Content="画像を表示"
                         Margin="2,2,2,2"
                         Command="{Binding ImageDialogCommand}"
