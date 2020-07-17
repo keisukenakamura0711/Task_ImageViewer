@@ -1,28 +1,115 @@
 ﻿using System;
-using System.Threading;
-using System.Timers;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Windows.Input;
+using System.Windows.Controls;
+using System.Linq;
 
 namespace Task_ImageViewer.ViewModels
 {
+    class ImageData
+    {
+        public string FullPath { get; set; }
+        public bool Selected { get; set; }
+    }
+
     /// <summary>
     /// MainViewウインドウに対するデータコンテキストを表します。
     /// </summary>
     internal class MainViewModel : NotificationObject
     {
-        private string _FilePath = "";
+        private readonly string[] IMAGE_EXTENSION = { ".bmp", ".jpg", ".png" };
+
+        #region データパスの入力
+        private string _imagePath = "";
         /// <summry>
-        /// 割られる数に指定される文字列を取得または設定します
+        /// データパスの設定、または
         /// </summry>
-        public string FilePath
+        public string ImagePath
         {
-            get { return this._FilePath; }
+            get { return this._imagePath; }
             set
             {
-                SetProperty(ref this._FilePath, value);
-                this.ImageDialogCommand.RaiseCanExecuteChanged();
+                SetProperty(ref this._imagePath, value);
+                this.UpdateImageList();
             }
         }
 
+        /// <summary>
+        /// 画像ファイルがデータパスに指定されているか
+        /// </summary>
+        /// <returns></returns>
+        public bool IsImagePathInputImageData()
+        {
+            foreach (string extension in IMAGE_EXTENSION)
+            {
+                if (this.ImagePath.Contains(extension)) { return true; }
+            }
+            return false;
+        }
+
+        #endregion データパスの入力
+
+        #region 画像リスト表示
+        private ObservableCollection<ImageData> _ImageDataList = new ObservableCollection<ImageData>();
+        public ObservableCollection<ImageData> ImageDataList
+        {
+            get { return this._ImageDataList; }
+            set { SetProperty(ref this._ImageDataList, value); }
+        }
+        public void UpdateImageList()
+        {
+            this.ImageDataList.Clear();
+
+            if (IsImagePathInputImageData())
+            {
+                var imageData = new ImageData
+                {
+                    FullPath = this.ImagePath
+                };
+                this.ImageDataList.Add(imageData);
+            }
+            else if (Directory.Exists(this.ImagePath))
+            {
+                var tempFolderImage = new List<string>();
+                foreach (string extension in IMAGE_EXTENSION)
+                {
+                    tempFolderImage.AddRange(System.IO.Directory.GetFiles(this.ImagePath, "*" + extension));
+                }
+                tempFolderImage.Sort();
+
+                foreach (string imageFullPath in tempFolderImage)
+                {
+                    var imageData = new ImageData
+                    {
+                        FullPath = imageFullPath
+                    };
+                    this.ImageDataList.Add(imageData);
+                }
+            }
+        }
+        /// <summary>
+        /// イメージを表示するリスト番号を取得します。
+        /// </summary>
+        /// <returns>リスト番号</returns>
+        /// 
+        /// 現在マルチセレクト不可だが後にマルチセレクトを実施する予定
+        public int GetOpenImageDialogListNo()
+        {
+            // 画像指定の場合は選択されていなくても指定されていることとし番号を返す
+            if (this.ImageDataList.Count == 1) { return 0; }
+
+            for (var i = 0; i < this.ImageDataList.Count; i++)
+            {
+                if (this.ImageDataList[i].Selected) { return i; }
+            }
+            return -1;
+        }
+
+        #endregion 画像リスト表示
+
+        #region ファイルを開く
         private DelegateCommand _openFileCommand;
         /// <summary>
         /// ファイルを開くコマンドを取得します。
@@ -51,8 +138,9 @@ namespace Task_ImageViewer.ViewModels
         private void OnDialogCallback(bool isOk, string filePath)
         {
             this.DialogCallback = null;
-            this.FilePath = filePath;
+            this.ImagePath = filePath;
         }
+        #endregion ファイルを開く
 
         #region アプリケーションを終了する
         public Func<bool> ClosingCallback
@@ -100,10 +188,10 @@ namespace Task_ImageViewer.ViewModels
                 return this._ImageDialogCommand ?? (this._ImageDialogCommand = new DelegateCommand(
                 _ =>
                 {
-                    ImageViewModel.ImageViewFile = this.FilePath;
+                    ImageViewModel.ImageViewFile = ImageDataList[this.GetOpenImageDialogListNo()].FullPath;
                     this.ImageDialogCallback = this.OnImageCallback;
                 },
-                _ => (this.FilePath.Contains(".bmp") || this.FilePath.Contains(".jpg") || this.FilePath.Contains(".png"))));
+                _ => this.GetOpenImageDialogListNo() >= 0));
             }
         }
 

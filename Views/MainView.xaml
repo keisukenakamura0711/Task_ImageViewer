@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:b="clr-namespace:Task_ImageViewer.Views.Behaviors"
         xmlns:vw="clr-namespace:Task_ImageViewer.Views"
         xmlns:local="clr-namespace:Task_ImageViewer.Views"
@@ -11,11 +12,22 @@
         b:WindowClosingBehavior.Callback="{Binding ClosingCallback}">
     <Window.InputBindings>
         <KeyBinding Modifiers="Control" Key="O" Command="{Binding OpenFileCommand}"/>
+        <KeyBinding Key="Enter"
+                    Command="{Binding ImageDialogCommand}"
+                    b:OpenDialogBehavior.WindowType="{x:Type vw:ImageView}"
+                    b:OpenDialogBehavior.DataContext="{Binding ImageViewModel}"
+                    b:OpenDialogBehavior.Callback="{Binding ImageDialogCallback}"/>
     </Window.InputBindings>
-    <DockPanel>
-        <Menu DockPanel.Dock="Top">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Menu>
             <MenuItem Header="ファイル(_F)">
-                <MenuItem Header="開く(_O)"
+                <MenuItem Header="ファイルを開く(_O)"
                           InputGestureText="Ctrl+O"
                           Command="{Binding OpenFileCommand}"
                           b:CommonDialogBehavior.Title="ファイルを開く"
@@ -35,16 +47,36 @@
             </MenuItem>
         </Menu>
 
-        <Grid>
-            <StackPanel Width="618" Margin="0,0,0,220" Orientation="Horizontal">
-                <TextBox Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,2,2" Width="500"/>
-                <Button Content="画像を表示"
-                        Margin="2,2,2,2"
-                        Command="{Binding ImageDialogCommand}"
-                        b:OpenDialogBehavior.WindowType="{x:Type vw:ImageView}"
-                        b:OpenDialogBehavior.DataContext="{Binding ImageViewModel}"
-                        b:OpenDialogBehavior.Callback="{Binding ImageDialogCallback}" Width="72"/>
-            </StackPanel>
-        </Grid>
-    </DockPanel>
+        <StackPanel Grid.Row="1" Width="618" Orientation="Horizontal">
+            <TextBox Text="{Binding ImagePath, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,2,2" Width="500"/>
+        </StackPanel>
+        <ListView Grid.Row="2" ItemsSource="{Binding ImageDataList}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding ImageDialogCommand}"
+                                           b:OpenDialogBehavior.WindowType="{x:Type vw:ImageView}"
+                                           b:OpenDialogBehavior.DataContext="{Binding ImageViewModel}"
+                                           b:OpenDialogBehavior.Callback="{Binding ImageDialogCallback}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Width="300" Height="200">
+                        <Image Source="{Binding FullPath}"></Image>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="IsSelected" Value="{Binding Selected}" />
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+    </Grid>
 </Window>
