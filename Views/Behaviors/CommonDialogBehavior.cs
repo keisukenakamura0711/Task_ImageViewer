@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Windows;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace Task_ImageViewer.Views.Behaviors
 {
@@ -10,141 +11,271 @@ namespace Task_ImageViewer.Views.Behaviors
 
     internal class CommonDialogBehavior
     {
-        #region Callback 添付プロパティ
+        #region ファイル選択ダイアログ
         /// <summary>
-        /// Action&lt;bool, string&gt; 型のCallback添付プロパティを定義します。
+        /// Action&lt;bool, string&gt; 型の Callback 添付プロパティを定義します。
         /// </summary>
-        public static readonly DependencyProperty CallbackProperty = DependencyProperty.RegisterAttached("Callback",
-                                                                                                         typeof(Action<bool, string>),
-                                                                                                         typeof(CommonDialogBehavior),
-                                                                                                         new PropertyMetadata(null, OnCallbackPropertyChanged));
+        public static readonly DependencyProperty FileCallbackProperty = DependencyProperty.RegisterAttached("FileCallback",
+                                                                                                             typeof(Action<bool, string>),
+                                                                                                             typeof(CommonDialogBehavior),
+                                                                                                             new PropertyMetadata(null, OnFileCallbackPropertyChanged));
 
         /// <summary>
-        /// Callback添付プロパティを取得します。
+        /// FileCallback 添付プロパティを取得します。
         /// </summary>
         /// <Param name="target">対象とするDependencyObjectを指定します</param>
         /// <returns>取得した値を返します</returns>
-        public static Action<bool, string> GetCallback(DependencyObject target)
+        public static Action<bool, string> GetFileCallback(DependencyObject target)
         {
-            return (Action<bool, string>)target.GetValue(CallbackProperty);
+            return (Action<bool, string>)target.GetValue(FileCallbackProperty);
         }
 
         /// <summary>
-        /// Callback添付プロパティを設定します。
+        /// FileCallback 添付プロパティを設定します。
         /// </summary>
         /// <param name="target">対象とする DependencyObject を指定します。</param>
         /// <param name="value">設定する値を指定します。</param>
-        public static void SetCallback(DependencyObject target, Action<bool, string> value)
+        public static void SetFileCallback(DependencyObject target, Action<bool, string> value)
         {
-            target.SetValue(CallbackProperty, value);
+            target.SetValue(FileCallbackProperty, value);
         }
 
         /// <summary>
-        /// string 型の Title 添付プロパティを定義します。
+        /// string 型の FileTitle 添付プロパティを定義します。
         /// </summary>
-        public static readonly DependencyProperty TitleProperty = DependencyProperty.RegisterAttached("Title",
-                                                                                                      typeof(string),
-                                                                                                      typeof(CommonDialogBehavior),
-                                                                                                      new PropertyMetadata("ファイルを開く"));
+        public static readonly DependencyProperty FileTitleProperty = DependencyProperty.RegisterAttached("FileTitle",
+                                                                                                          typeof(string),
+                                                                                                          typeof(CommonDialogBehavior),
+                                                                                                          new PropertyMetadata("ファイルを開く"));
 
         /// <summary>
-        /// Title添付プロパティを取得します。
+        /// FileTitle 添付プロパティを取得します。
         /// </summary>
         /// <Param name="target">対象とするDependencyObjectを指定します</param>
         /// <returns>取得した値を返します</returns>
-        public static string GetTitle(DependencyObject target)
+        public static string GetFileTitle(DependencyObject target)
         {
-            return (string)target.GetValue(TitleProperty);
+            return (string)target.GetValue(FileTitleProperty);
         }
 
         /// <summary>
-        /// Title添付プロパティを設定します。
+        /// FileTitle 添付プロパティを設定します。
         /// </summary>
         /// <param name="target">対象とする DependencyObject を指定します。</param>
         /// <param name="value">設定する値を指定します。</param>
-        public static void SetTitle(DependencyObject target, string value)
+        public static void SetFileTitle(DependencyObject target, string value)
         {
-            target.SetValue(TitleProperty, value);
+            target.SetValue(FileTitleProperty, value);
         }
 
         /// <summary>
-        /// string 型の Filter 添付プロパティを定義します。
+        /// string 型の FileFilter 添付プロパティを定義します。
         /// </summary>
-        public static readonly DependencyProperty FilterProperty = DependencyProperty.RegisterAttached("Filter",
-                                                                                                       typeof(string),
-                                                                                                       typeof(CommonDialogBehavior),
-                                                                                                       new PropertyMetadata("すべてのファイル(*.*) | *.* "));
+        public static readonly DependencyProperty FileFilterProperty = DependencyProperty.RegisterAttached("FileFilter",
+                                                                                                           typeof(string),
+                                                                                                           typeof(CommonDialogBehavior),
+                                                                                                           new PropertyMetadata("すべてのファイル(*.*)|*.*"));
 
         /// <summary>
-        /// Filter添付プロパティを取得します。
+        /// FileFilter 添付プロパティを取得します。
         /// </summary>
         /// <Param name="target">対象とするDependencyObjectを指定します</param>
         /// <returns>取得した値を返します</returns>
-        public static string GetFilter(DependencyObject target)
+        public static string GetFileFilter(DependencyObject target)
         {
-            return (string)target.GetValue(FilterProperty);
+            return (string)target.GetValue(FileFilterProperty);
         }
 
         /// <summary>
-        /// Filter添付プロパティを設定します。
+        /// FileFilter 添付プロパティを設定します。
         /// </summary>
         /// <param name="target">対象とする DependencyObject を指定します。</param>
         /// <param name="value">設定する値を指定します。</param>
-        public static void SetFilter(DependencyObject target, string value)
+        public static void SetFileFilter(DependencyObject target, string value)
         {
-            target.SetValue(FilterProperty, value);
+            target.SetValue(FileFilterProperty, value);
         }
 
         /// <summary>
-        /// string 型の Multiselect 添付プロパティを定義します。
+        /// string 型の FileMultiselect 添付プロパティを定義します。
         /// </summary>
-        public static readonly DependencyProperty MultiselectProperty = DependencyProperty.RegisterAttached("Multiselect",
-                                                                                                            typeof(bool),
+        public static readonly DependencyProperty FileMultiselectProperty = DependencyProperty.RegisterAttached("FileMultiselect",
+                                                                                                                typeof(bool),
+                                                                                                                typeof(CommonDialogBehavior),
+                                                                                                                new PropertyMetadata(false));
+
+        /// <summary>
+        /// FileMultiselect 添付プロパティを取得します。
+        /// </summary>
+        /// <Param name="target">対象とするDependencyObjectを指定します</param>
+        /// <returns>取得した値を返します</returns>
+        public static bool GetFileMultiselect(DependencyObject target)
+        {
+            return (bool)target.GetValue(FileMultiselectProperty);
+        }
+
+        /// <summary>
+        ///File Multiselect 添付プロパティを設定します。
+        /// </summary>
+        /// <param name="target">対象とする DependencyObject を指定します。</param>
+        /// <param name="value">設定する値を指定します。</param>
+        public static void SetFileMultiselect(DependencyObject target, bool value)
+        {
+            target.SetValue(FileMultiselectProperty, value);
+        }
+
+        private static void OnFileCallbackPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var callback = GetFileCallback(sender);
+            if(callback != null)
+            {
+                var dlg = new CommonOpenFileDialog()
+                {
+                    Title = GetFileTitle(sender),
+                    Multiselect = GetFileMultiselect(sender),
+                    IsFolderPicker = false,
+                };
+
+                string rawDisplayName = "";
+                foreach (string str in GetFileFilter(sender).Split('|'))
+                {
+                    if (rawDisplayName == "")
+                    {
+                        rawDisplayName = str;
+                    }
+                    else
+                    {
+                        dlg.Filters.Add (new CommonFileDialogFilter(rawDisplayName, str));
+                        rawDisplayName = "";
+                    }
+                }
+
+                var result = dlg.ShowDialog();
+                if (result == CommonFileDialogResult.Ok)
+                {
+                    callback(true, dlg.FileName);
+                }
+                else
+                {
+                    callback(false, "");
+                }
+            }
+        }
+        #endregion ファイル選択ダイアログ
+
+        #region フォルダ選択ダイアログ
+        /// <summary>
+        /// Action&lt;bool, string&gt; 型の FolderCallback 添付プロパティを定義します。
+        /// </summary>
+        public static readonly DependencyProperty FolderCallbackProperty = DependencyProperty.RegisterAttached("FolderCallback",
+                                                                                                               typeof(Action<bool, string>),
+                                                                                                               typeof(CommonDialogBehavior),
+                                                                                                               new PropertyMetadata(null, OnFolderCallbackPropertyChanged));
+
+        /// <summary>
+        /// FolderCallback 添付プロパティを取得します。
+        /// </summary>
+        /// <Param name="target">対象とするDependencyObjectを指定します</param>
+        /// <returns>取得した値を返します</returns>
+        public static Action<bool, string> GetFolderCallback(DependencyObject target)
+        {
+            return (Action<bool, string>)target.GetValue(FolderCallbackProperty);
+        }
+
+        /// <summary>
+        /// FolderCallback 添付プロパティを設定します。
+        /// </summary>
+        /// <param name="target">対象とする DependencyObject を指定します。</param>
+        /// <param name="value">設定する値を指定します。</param>
+        public static void SetFolderCallback(DependencyObject target, Action<bool, string> value)
+        {
+            target.SetValue(FolderCallbackProperty, value);
+        }
+
+        /// <summary>
+        /// string 型の FolderTitle 添付プロパティを定義します。
+        /// </summary>
+        public static readonly DependencyProperty FolderTitleProperty = DependencyProperty.RegisterAttached("FolderTitle",
+                                                                                                            typeof(string),
                                                                                                             typeof(CommonDialogBehavior),
-                                                                                                            new PropertyMetadata(false));
+                                                                                                            new PropertyMetadata("ファイルを開く"));
 
         /// <summary>
-        /// Multiselect添付プロパティを取得します。
+        /// FolderTitle 添付プロパティを取得します。
         /// </summary>
         /// <Param name="target">対象とするDependencyObjectを指定します</param>
         /// <returns>取得した値を返します</returns>
-        public static bool GetMultiselect(DependencyObject target)
+        public static string GetFolderTitle(DependencyObject target)
         {
-            return (bool)target.GetValue(MultiselectProperty);
+            return (string)target.GetValue(FolderTitleProperty);
         }
 
         /// <summary>
-        /// Filter添付プロパティを設定します。
+        /// FolderTitle 添付プロパティを設定します。
         /// </summary>
         /// <param name="target">対象とする DependencyObject を指定します。</param>
         /// <param name="value">設定する値を指定します。</param>
-        public static void SetMultiselect(DependencyObject target, bool value)
+        public static void SetFolderTitle(DependencyObject target, string value)
         {
-            target.SetValue(MultiselectProperty, value);
+            target.SetValue(FolderTitleProperty, value);
         }
 
         /// <summary>
-        /// Callback添付プロパティ変更イベントハンドラ
+        /// string 型の FolderMultiselect 添付プロパティを定義します。
+        /// </summary>
+        public static readonly DependencyProperty FolderMultiselectProperty = DependencyProperty.RegisterAttached("FolderMultiselect",
+                                                                                                                  typeof(bool),
+                                                                                                                  typeof(CommonDialogBehavior),
+                                                                                                                  new PropertyMetadata(false));
+
+        /// <summary>
+        /// FolderMultiselect 添付プロパティを取得します。
+        /// </summary>
+        /// <Param name="target">対象とするDependencyObjectを指定します</param>
+        /// <returns>取得した値を返します</returns>
+        public static bool GetFolderMultiselect(DependencyObject target)
+        {
+            return (bool)target.GetValue(FolderMultiselectProperty);
+        }
+
+        /// <summary>
+        /// FolderMultiselect 添付プロパティを設定します。
+        /// </summary>
+        /// <param name="target">対象とする DependencyObject を指定します。</param>
+        /// <param name="value">設定する値を指定します。</param>
+        public static void SetFolderMultiselect(DependencyObject target, bool value)
+        {
+            target.SetValue(FolderMultiselectProperty, value);
+        }
+
+        /// <summary>
+        /// FolderCallback 添付プロパティ変更イベントハンドラ
         /// </summary>
         /// <param name="sender">イベント発行元</param>
         /// <param name="e">イベント引数</param>
-        private static void OnCallbackPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnFolderCallbackPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            var callback = GetCallback(sender);
-            if(callback != null)
+            var callback = GetFolderCallback(sender);
+            if (callback != null)
             {
-                var dlg = new OpenFileDialog()
+                var dlg = new CommonOpenFileDialog()
                 {
-                    Title = GetTitle(sender),
-                    Filter = GetFilter(sender),
-                    Multiselect = GetMultiselect(sender),
+                    Title = GetFolderTitle(sender),
+                    Multiselect = GetFolderMultiselect(sender),
+                    IsFolderPicker = true,
                 };
 
-                var owner = Window.GetWindow(sender);
-                var result = dlg.ShowDialog(owner);
-                callback(result.Value, dlg.FileName);
+                var result = dlg.ShowDialog();
+                if (result == CommonFileDialogResult.Ok)
+                {
+                    callback(true, dlg.FileName);
+                }
+                else
+                {
+                    callback(false, "");
+                }
             }
         }
-        #endregion Callback 添付プロパティ
+        #endregion ファイル選択ダイアログ
     }
 }

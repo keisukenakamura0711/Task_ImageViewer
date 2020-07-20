@@ -24,7 +24,7 @@ namespace Task_ImageViewer.ViewModels
         #region データパスの入力
         private string _imagePath = "";
         /// <summry>
-        /// データパスの設定、または
+        /// データパスの設定
         /// </summry>
         public string ImagePath
         {
@@ -120,27 +120,66 @@ namespace Task_ImageViewer.ViewModels
             {
                 return this._openFileCommand ?? (this._openFileCommand = new DelegateCommand(_ =>
                 {
-                    this.DialogCallback = OnDialogCallback;
+                    this.FileDialogCallback = OnFileDialogCallback;
                 }));
             }
         }
 
-        private Action<bool, string> _dialogCallback;
+        private Action<bool, string> _fileDialogCallback;
         /// <summary>
         /// ダイアログに対するコールバックを取得します。
         /// </summary>
-        public Action<bool, string> DialogCallback
+        public Action<bool, string> FileDialogCallback
         {
-            get { return this._dialogCallback; }
-            private set { SetProperty(ref this._dialogCallback, value); }
+            get { return this._fileDialogCallback; }
+            private set { SetProperty(ref this._fileDialogCallback, value); }
         }
 
-        private void OnDialogCallback(bool isOk, string filePath)
+        private void OnFileDialogCallback(bool isOk, string filePath)
         {
-            this.DialogCallback = null;
-            this.ImagePath = filePath;
+            this.FileDialogCallback = null;
+            if (isOk)
+            {
+                this.ImagePath = filePath;
+            }
         }
         #endregion ファイルを開く
+
+        #region フォルダを開く
+        private DelegateCommand _openFolderCommand;
+        /// <summary>
+        /// ファイルを開くコマンドを取得します。
+        /// </summary>
+        public DelegateCommand OpenFolderCommand
+        {
+            get
+            {
+                return this._openFolderCommand ?? (this._openFolderCommand = new DelegateCommand(_ =>
+                {
+                    this.FolderDialogCallback = OnFolderDialogCallback;
+                }));
+            }
+        }
+
+        private Action<bool, string> _folderDialogCallback;
+        /// <summary>
+        /// ダイアログに対するコールバックを取得します。
+        /// </summary>
+        public Action<bool, string> FolderDialogCallback
+        {
+            get { return this._folderDialogCallback; }
+            private set { SetProperty(ref this._folderDialogCallback, value); }
+        }
+
+        private void OnFolderDialogCallback(bool isOk, string filePath)
+        {
+            this.FolderDialogCallback = null;
+            if (isOk)
+            {
+                this.ImagePath = filePath;
+            }
+        }
+        #endregion フォルダを開く
 
         #region アプリケーションを終了する
         public Func<bool> ClosingCallback
