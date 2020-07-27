@@ -7,6 +7,47 @@
         mc:Ignorable="d"
         Title="ImageView" Height="450" Width="800">
     <Grid>
-        <Image Source="{Binding ImageViewFile}" Grid.Row="1"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Slider Name="SliderScale"
+                Grid.Row="0"
+                Grid.Column="0"
+                Width="300"
+                TickPlacement="None"
+                Foreground="Black"
+                Margin="10"
+                IsSnapToTickEnabled="True"
+                Value="0.5"
+                TickFrequency="0.1"
+                Minimum="0.1"
+                Maximum="1.0" SmallChange="0"/>
+        <Slider Name="SliderRotate"
+                Grid.Row="0"
+                Grid.Column="1"
+                Width="300"
+                TickPlacement="None"
+                Foreground="Black"
+                Margin="10"
+                IsSnapToTickEnabled="True"
+                TickFrequency="1"
+                Minimum="0"
+                Maximum="359"/>
+        <Image Source="{Binding ImageViewFile}"
+               Grid.Row="1"
+               RenderTransformOrigin="0.5, 0.5">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="{Binding ElementName=SliderScale, Path=Value}" ScaleY="{Binding ElementName=SliderScale, Path=Value}"/>
+                    <RotateTransform Angle="{Binding ElementName=SliderRotate, Path=Value}"/>
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
     </Grid>
 </Window>

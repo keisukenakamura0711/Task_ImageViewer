@@ -5,12 +5,15 @@ using System.IO;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System.Linq;
+using System.Collections.Specialized;
+using System.Windows.Media.Imaging;
 
 namespace Task_ImageViewer.ViewModels
 {
     class ImageData
     {
         public string FullPath { get; set; }
+        public BitmapImage Thumbnail { get; set; }
         public bool Selected { get; set; }
     }
 
@@ -32,7 +35,10 @@ namespace Task_ImageViewer.ViewModels
             set
             {
                 SetProperty(ref this._imagePath, value);
-                this.UpdateImageList();
+                if (this.UpdateImageList())
+                {
+                    this.ImagePathHistory.Add(this._imagePath);
+                }
             }
         }
 
@@ -49,6 +55,13 @@ namespace Task_ImageViewer.ViewModels
             return false;
         }
 
+        private StringCollection _imagePathHistory;
+        public StringCollection ImagePathHistory
+        {
+            get { return this._imagePathHistory; }
+            set { SetProperty(ref this._imagePathHistory, value); }
+        }
+
         #endregion データパスの入力
 
         #region 画像リスト表示
@@ -58,7 +71,11 @@ namespace Task_ImageViewer.ViewModels
             get { return this._ImageDataList; }
             set { SetProperty(ref this._ImageDataList, value); }
         }
-        public void UpdateImageList()
+        /// <summary>
+        /// 画像リスト更新
+        /// </summary>
+        /// <returns></returns>
+        public bool UpdateImageList()
         {
             this.ImageDataList.Clear();
 
@@ -66,11 +83,15 @@ namespace Task_ImageViewer.ViewModels
             {
                 var imageData = new ImageData
                 {
-                    FullPath = this.ImagePath
+                    FullPath = this.ImagePath,
+                    Thumbnail = createThumbnail(this.ImagePath),
                 };
                 this.ImageDataList.Add(imageData);
+
+                return true;
             }
-            else if (Directory.Exists(this.ImagePath))
+            
+            if (Directory.Exists(this.ImagePath))
             {
                 var tempFolderImage = new List<string>();
                 foreach (string extension in IMAGE_EXTENSION)
@@ -83,11 +104,33 @@ namespace Task_ImageViewer.ViewModels
                 {
                     var imageData = new ImageData
                     {
-                        FullPath = imageFullPath
+                        FullPath = imageFullPath,
+                        Thumbnail = createThumbnail(imageFullPath),
                     };
                     this.ImageDataList.Add(imageData);
                 }
+                if (tempFolderImage.Count > 0){ return true; }
             }
+
+            return false;
+        }
+        /// <summary>
+        /// サムネイルを作成します。
+        /// </summary>
+        /// <param name="filePath">サムネイルを作成するファイルパス</param>
+        /// <returns>BitmapImage</returns>
+        BitmapImage createThumbnail(String filePath)
+        {
+            BitmapImage bmpImg = new BitmapImage();
+            FileStream fileStream = File.OpenRead(filePath);
+
+            bmpImg.BeginInit();
+            bmpImg.CacheOption = BitmapCacheOption.OnLoad;
+            bmpImg.StreamSource = fileStream;
+            bmpImg.EndInit();
+            fileStream.Close();
+
+            return bmpImg;
         }
         /// <summary>
         /// イメージを表示するリスト番号を取得します。
@@ -181,6 +224,36 @@ namespace Task_ImageViewer.ViewModels
         }
         #endregion フォルダを開く
 
+        #region ウィンドウ読み込み
+        private DelegateCommand _lodingCommand;
+        /// <summary>
+        /// ウィンドウ読み込みコマンドを取得します。
+        /// </summary>
+        public DelegateCommand LodingCommand
+        {
+            get
+            {
+                return this._lodingCommand ?? (this._lodingCommand = new DelegateCommand(_ => { OnLoding(); }));
+            }
+        }
+
+        /// <summary>
+        /// ウィンドウ読み込みを行います。
+        /// </summary>
+        private bool OnLoding()
+        {
+            if (Properties.Settings.Default.ImagePathHistory == null)
+            {
+                this.ImagePathHistory = new StringCollection();
+            }
+            else
+            {
+                this.ImagePathHistory = Properties.Settings.Default.ImagePathHistory;
+            }
+            return true;
+        }
+        #endregion ウィンドウ読み込み
+
         #region アプリケーションを終了する
         public Func<bool> ClosingCallback
         {
@@ -204,6 +277,8 @@ namespace Task_ImageViewer.ViewModels
         /// </summary>
         private bool OnExit()
         {
+            Properties.Settings.Default.ImagePathHistory = this.ImagePathHistory;
+            Properties.Settings.Default.Save();
             App.Current.Shutdown();
             return true;
         }

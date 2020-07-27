@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.Xaml.Behaviors;
+using System.Windows.Forms;
 
 namespace Task_ImageViewer.Views
 {

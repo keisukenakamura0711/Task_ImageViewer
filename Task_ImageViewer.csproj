@@ -74,6 +74,7 @@
     <Compile Include="Views\Behaviors\CommonDialogBehavior.cs" />
     <Compile Include="Views\Behaviors\OpenDialogBehavior.cs" />
     <Compile Include="Views\Behaviors\WindowClosingBehavior.cs" />
+    <Compile Include="Views\Behaviors\WindowLoadingBehavior.cs" />
     <Compile Include="Views\ImageView.xaml.cs">
       <DependentUpon>ImageView.xaml</DependentUpon>
     </Compile>
